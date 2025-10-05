@@ -131,49 +131,7 @@ class ApplicationController:
         except Exception as e:
             self.view.display_error(f"Error generating passphrase: {str(e)}")
     
-    def _generate_password_interactive(self) -> None:
-        """Generate password with interactive prompts."""
-        try:
-            length_input = self.view.prompt_input("Password length (default 12):")
-            length = int(length_input) if length_input.strip() else None
-            
-            uppercase_input = self.view.prompt_input("Include uppercase? (y/n, default y):")
-            include_uppercase = uppercase_input.lower() not in ['n', 'no', 'false']
-            
-            lowercase_input = self.view.prompt_input("Include lowercase? (y/n, default y):")
-            include_lowercase = lowercase_input.lower() not in ['n', 'no', 'false']
-            
-            digits_input = self.view.prompt_input("Include digits? (y/n, default y):")
-            include_digits = digits_input.lower() not in ['n', 'no', 'false']
-            
-            symbols_input = self.view.prompt_input("Include symbols? (y/n, default y):")
-            include_symbols = symbols_input.lower() not in ['n', 'no', 'false']
-            
-            ambiguous_input = self.view.prompt_input("Exclude ambiguous characters? (y/n, default n):")
-            exclude_ambiguous = ambiguous_input.lower() in ['y', 'yes', 'true']
-            
-            # Validate parameters
-            error = self.password_controller.validate_parameters(
-                length, include_uppercase, include_lowercase, include_digits, include_symbols
-            )
-            if error:
-                self.view.display_error(error)
-                return
-            
-            # Generate and display
-            self.password_controller.generate_and_display_password(
-                length=length,
-                include_uppercase=include_uppercase,
-                include_lowercase=include_lowercase,
-                include_digits=include_digits,
-                include_symbols=include_symbols,
-                exclude_ambiguous=exclude_ambiguous
-            )
-            
-        except ValueError:
-            self.view.display_error("Invalid number for password length")
-        except Exception as e:
-            self.view.display_error(f"Error generating password: {str(e)}")
+
     
     def _display_statistics(self) -> None:
         """Display application statistics."""
@@ -191,17 +149,7 @@ class ApplicationController:
         """
         return self.passphrase_controller.generate_passphrase(**kwargs)
     
-    def generate_quick_password(self, **kwargs) -> Dict[str, Any]:
-        """
-        Generate a password with default or provided parameters.
-        
-        Args:
-            **kwargs: Password generation parameters
-            
-        Returns:
-            Dict containing password result
-        """
-        return self.password_controller.generate_password(**kwargs)
+
     
     def hello_world(self) -> str:
         """
