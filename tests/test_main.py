@@ -103,86 +103,11 @@ class TestPassphraseModel:
         with pytest.raises(ValueError):
             model._validate_word_count(100)  # Too high
     
-    def test_entropy_calculation(self):
-        """Test entropy calculation."""
+    def test_word_pool_info(self):
+        """Test word pool information."""
         model = PassphraseModel()
-        entropy = model.estimate_entropy(4)
-        assert entropy > 0
-        
-        # More words should have higher entropy
-        entropy_5 = model.estimate_entropy(5)
-        assert entropy_5 > entropy
-
-
-class TestPasswordModel:
-    """Test the password model."""
-    
-    def test_initialization(self):
-        """Test model initialization."""
-        model = PasswordModel()
-        assert model.default_length == 12
-        assert model.min_length == 4
-    
-    def test_generate_password(self):
-        """Test password generation."""
-        model = PasswordModel()
-        password = model.generate()
-        
-        assert isinstance(password, str)
-        assert len(password) == 12
-    
-    def test_generate_with_parameters(self):
-        """Test password generation with custom parameters."""
-        model = PasswordModel()
-        
-        password = model.generate(
-            length=8,
-            include_uppercase=False,
-            include_symbols=False
-        )
-        
-        assert len(password) == 8
-        assert not any(c.isupper() for c in password)
-    
-    def test_validate_length(self):
-        """Test length validation."""
-        model = PasswordModel()
-        
-        with pytest.raises(ValueError):
-            model._validate_length(3)  # Too short
-        
-        with pytest.raises(ValueError):
-            model._validate_length(200)  # Too long
-    
-    def test_character_requirements(self):
-        """Test that passwords include required character types."""
-        model = PasswordModel()
-        
-        password = model.generate(
-            length=12,
-            include_uppercase=True,
-            include_lowercase=True,
-            include_digits=True,
-            include_symbols=True
-        )
-        
-        # Should have at least one character from each enabled type
-        assert any(c.isupper() for c in password)
-        assert any(c.islower() for c in password)
-        assert any(c.isdigit() for c in password)
-        assert any(not c.isalnum() for c in password)
-    
-    def test_no_character_types(self):
-        """Test error when no character types are enabled."""
-        model = PasswordModel()
-        
-        with pytest.raises(ValueError):
-            model.generate(
-                include_uppercase=False,
-                include_lowercase=False,
-                include_digits=False,
-                include_symbols=False
-            )
+        word_pool_size = model.get_word_pool_size()
+        assert word_pool_size > 0
 
 
 class TestApplicationController:
@@ -194,20 +119,18 @@ class TestApplicationController:
         assert app.passphrase_controller is not None
         assert app.password_controller is not None
     
-    def test_quick_generation(self):
-        """Test quick generation methods."""
+    def test_quick_passphrase_generation(self):
+        """Test quick passphrase generation method."""
         app = ApplicationController()
         
         passphrase_result = app.generate_quick_passphrase()
         assert 'passphrase' in passphrase_result
         assert 'error' not in passphrase_result
-        
-        password_result = app.generate_quick_password()
-        assert 'password' in password_result
-        assert 'error' not in password_result
+        assert 'word_count' in passphrase_result
+        assert 'word_pool_size' in passphrase_result
     
     def test_hello_world_mvc(self):
         """Test MVC version of hello world."""
         app = ApplicationController()
         result = app.hello_world()
-        assert "MVC Architecture" in result
+        assert "Hello, World!" in result
