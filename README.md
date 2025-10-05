@@ -1,24 +1,31 @@
 # Passphrases
 
-A Python project for passphrase generation and management, built with **Model-View-Controller (MVC)** architecture.
+A Python library for secure passphrase generation using **NLTK corpus** and built with **Model-View-Controller (MVC)** architecture.
+
+## Features
+
+- **NLTK Corpus Integration**: Uses the comprehensive NLTK words corpus (175,000+ English words)
+- **Flexible Generation**: Customizable word count, separators, capitalization, and number inclusion
+- **MVC Architecture**: Clean, maintainable, and extensible codebase
+- **Importable Library**: Easy to integrate into other applications
+- **CLI Interface**: Command-line tool for direct usage
+- **Fallback Support**: Works even without NLTK installation
 
 ## Architecture
 
-This project follows the MVC design pattern:
+This library follows the MVC design pattern:
 
 - **Models** (`models/`): Business logic and data handling
-  - `PassphraseModel`: Passphrase generation logic
-  - `PasswordModel`: Password generation logic  
-  - `WordRepository`: Word data management
+  - `PassphraseModel`: Core passphrase generation logic
+  - `WordRepository`: NLTK corpus integration and word management
   
 - **Views** (`views/`): User interface and presentation
   - `CLIView`: Command-line interface
-  - `ConsoleFormatter`: Output formatting
+  - `ConsoleFormatter`: Colored output formatting
   
 - **Controllers** (`controllers/`): Application coordination
-  - `ApplicationController`: Main application logic
-  - `PassphraseController`: Passphrase operations
-  - `PasswordController`: Password operations
+  - `ApplicationController`: Main application orchestration
+  - `PassphraseController`: Passphrase generation operations
 
 ## Installation
 
