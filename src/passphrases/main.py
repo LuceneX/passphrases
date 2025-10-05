@@ -52,9 +52,8 @@ def main() -> None:
 Examples:
   %(prog)s                          # Interactive mode
   %(prog)s passphrase              # Generate passphrase
-  %(prog)s password                # Generate password
   %(prog)s passphrase --words 5    # 5-word passphrase
-  %(prog)s password --length 16    # 16-character password
+  %(prog)s passphrase --count 10   # Generate 10 passphrases
   %(prog)s demo                    # Run demonstration
         """
     )
