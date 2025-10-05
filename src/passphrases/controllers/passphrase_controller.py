@@ -150,7 +150,7 @@ class PassphraseController:
             passphrases = self.generate_bulk_passphrases(count, **kwargs)
             
             if passphrases:
-                self.view.display_bulk_generation(passphrases, "Passphrase")
+                self.view.display_bulk_passphrases(passphrases)
             else:
                 self.view.display_error("Failed to generate passphrases")
                 
