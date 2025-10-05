@@ -110,14 +110,13 @@ class ConsoleFormatter:
         """
         return self.colorize(f"ℹ {message}", 'cyan')
     
-    def format_generated_item(self, label: str, value: str, strength: Optional[str] = None) -> str:
+    def format_generated_item(self, label: str, value: str) -> str:
         """
-        Format a generated passphrase or password with metadata.
+        Format a generated passphrase with simple formatting.
         
         Args:
-            label: Label for the item (e.g., "Passphrase", "Password")
+            label: Label for the item (e.g., "Passphrase")
             value: The generated value
-            strength: Optional strength rating
             
         Returns:
             str: Formatted output
@@ -126,34 +125,7 @@ class ConsoleFormatter:
         lines.append(self.colorize(f"{label}:", 'bold'))
         lines.append(f"  {self.colorize(value, 'green')}")
         
-        if strength:
-            color = self._get_strength_color(strength)
-            lines.append(f"  Strength: {self.colorize(strength, color)}")
-        
         return "\n".join(lines)
-    
-    def _get_strength_color(self, strength: str) -> str:
-        """
-        Get the appropriate color for a strength rating.
-        
-        Args:
-            strength: Strength rating
-            
-        Returns:
-            str: Color name
-        """
-        strength_lower = strength.lower()
-        
-        if 'very weak' in strength_lower or 'weak' in strength_lower:
-            return 'red'
-        elif 'fair' in strength_lower:
-            return 'yellow'
-        elif 'good' in strength_lower:
-            return 'blue'
-        elif 'strong' in strength_lower or 'very strong' in strength_lower:
-            return 'green'
-        else:
-            return 'white'
     
     def format_statistics(self, stats: Dict[str, Any]) -> str:
         """
