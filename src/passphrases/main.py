@@ -1,12 +1,18 @@
 """
-Main module for passphrase functionality.
+Main entry point for the passphrases application.
+
+This module provides command-line interface and backwards compatibility
+with the original function signatures.
 """
 
-from typing import List, Optional
-import secrets
-import string
+import sys
+import argparse
+from typing import Optional
+
+from .controllers.application_controller import ApplicationController
 
 
+# Backwards compatibility functions (using original signatures)
 def generate_passphrase(
     word_count: int = 4,
     separator: str = "-",
@@ -23,21 +29,13 @@ def generate_passphrase(
     Returns:
         str: Generated passphrase
     """
-    # Simple word list for demo purposes
-    words = [
-        "apple", "banana", "cherry", "dragon", "elephant", "forest",
-        "galaxy", "harbor", "island", "jungle", "kitchen", "laptop",
-        "mountain", "nature", "ocean", "planet", "question", "rainbow",
-        "sunset", "thunder", "universe", "valley", "winter", "xenon",
-        "yellow", "zephyr"
-    ]
-    
-    selected_words = [secrets.choice(words) for _ in range(word_count)]
-    
-    if capitalize:
-        selected_words = [word.capitalize() for word in selected_words]
-    
-    return separator.join(selected_words)
+    app = ApplicationController()
+    result = app.generate_quick_passphrase(
+        word_count=word_count,
+        separator=separator,
+        capitalize=capitalize
+    )
+    return result.get('passphrase', 'Error generating passphrase')
 
 
 def generate_password(
@@ -60,18 +58,167 @@ def generate_password(
     Returns:
         str: Generated password
     """
-    character_pool = ""
+    app = ApplicationController()
+    result = app.generate_quick_password(
+        length=length,
+        include_uppercase=include_uppercase,
+        include_lowercase=include_lowercase,
+        include_digits=include_digits,
+        include_symbols=include_symbols
+    )
+    return result.get('password', 'Error generating password')
+
+
+def main() -> None:
+    """
+    Main command-line interface entry point.
+    """
+    parser = argparse.ArgumentParser(
+        description='Generate secure passphrases and passwords',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  %(prog)s                          # Interactive mode
+  %(prog)s passphrase              # Generate passphrase
+  %(prog)s password                # Generate password
+  %(prog)s passphrase --words 5    # 5-word passphrase
+  %(prog)s password --length 16    # 16-character password
+  %(prog)s demo                    # Run demonstration
+        """
+    )
     
-    if include_lowercase:
-        character_pool += string.ascii_lowercase
-    if include_uppercase:
-        character_pool += string.ascii_uppercase
-    if include_digits:
-        character_pool += string.digits
-    if include_symbols:
-        character_pool += "!@#$%^&*()_+-=[]{}|;:,.<>?"
+    parser.add_argument(
+        'command',
+        nargs='?',
+        choices=['passphrase', 'password', 'demo', 'interactive'],
+        help='What to generate or run'
+    )
     
-    if not character_pool:
-        raise ValueError("At least one character type must be included")
+    # Passphrase options
+    parser.add_argument(
+        '--words',
+        type=int,
+        default=4,
+        help='Number of words in passphrase (default: 4)'
+    )
+    parser.add_argument(
+        '--separator',
+        default='-',
+        help='Word separator for passphrase (default: -)'
+    )
+    parser.add_argument(
+        '--no-caps',
+        action='store_true',
+        help='Do not capitalize words in passphrase'
+    )
+    parser.add_argument(
+        '--include-numbers',
+        action='store_true',
+        help='Include numbers in passphrase words'
+    )
     
-    return "".join(secrets.choice(character_pool) for _ in range(length))
+    # Password options
+    parser.add_argument(
+        '--length',
+        type=int,
+        default=12,
+        help='Password length (default: 12)'
+    )
+    parser.add_argument(
+        '--no-uppercase',
+        action='store_true',
+        help='Exclude uppercase letters'
+    )
+    parser.add_argument(
+        '--no-lowercase',
+        action='store_true',
+        help='Exclude lowercase letters'
+    )
+    parser.add_argument(
+        '--no-digits',
+        action='store_true',
+        help='Exclude digits'
+    )
+    parser.add_argument(
+        '--no-symbols',
+        action='store_true',
+        help='Exclude symbols'
+    )
+    parser.add_argument(
+        '--exclude-ambiguous',
+        action='store_true',
+        help='Exclude ambiguous characters (0, O, l, I, etc.)'
+    )
+    
+    # Bulk generation
+    parser.add_argument(
+        '--count',
+        type=int,
+        default=1,
+        help='Number of items to generate (default: 1)'
+    )
+    
+    args = parser.parse_args()
+    
+    # Create application controller
+    app = ApplicationController()
+    
+    try:
+        if args.command is None or args.command == 'interactive':
+            # Interactive mode
+            app.run_interactive_mode()
+        
+        elif args.command == 'demo':
+            # Demo mode
+            app.demo_generation()
+        
+        elif args.command == 'passphrase':
+            # Generate passphrase(s)
+            if args.count == 1:
+                app.passphrase_controller.generate_and_display_passphrase(
+                    word_count=args.words,
+                    separator=args.separator,
+                    capitalize=not args.no_caps,
+                    include_numbers=args.include_numbers
+                )
+            else:
+                app.passphrase_controller.display_bulk_passphrases(
+                    count=args.count,
+                    word_count=args.words,
+                    separator=args.separator,
+                    capitalize=not args.no_caps,
+                    include_numbers=args.include_numbers
+                )
+        
+        elif args.command == 'password':
+            # Generate password(s)
+            if args.count == 1:
+                app.password_controller.generate_and_display_password(
+                    length=args.length,
+                    include_uppercase=not args.no_uppercase,
+                    include_lowercase=not args.no_lowercase,
+                    include_digits=not args.no_digits,
+                    include_symbols=not args.no_symbols,
+                    exclude_ambiguous=args.exclude_ambiguous
+                )
+            else:
+                app.password_controller.display_bulk_passwords(
+                    count=args.count,
+                    length=args.length,
+                    include_uppercase=not args.no_uppercase,
+                    include_lowercase=not args.no_lowercase,
+                    include_digits=not args.no_digits,
+                    include_symbols=not args.no_symbols,
+                    exclude_ambiguous=args.exclude_ambiguous
+                )
+    
+    except KeyboardInterrupt:
+        print("\nOperation cancelled.")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
