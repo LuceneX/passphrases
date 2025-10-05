@@ -1,9 +1,8 @@
 """
-Models package - Contains data structures and business logic.
+Models package - Contains data structures and business logic for passphrase generation.
 """
 
 from .passphrase_model import PassphraseModel
-from .password_model import PasswordModel
 from .word_repository import WordRepository
 
-__all__ = ['PassphraseModel', 'PasswordModel', 'WordRepository']
+__all__ = ['PassphraseModel', 'WordRepository']
