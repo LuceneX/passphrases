@@ -4,16 +4,14 @@ Application controller - Main controller coordinating the entire application.
 
 from typing import Optional, List, Dict, Any
 from ..models.passphrase_model import PassphraseModel
-from ..models.password_model import PasswordModel
 from ..models.word_repository import WordRepository
 from ..views.cli_view import CLIView
 from .passphrase_controller import PassphraseController
-from .password_controller import PasswordController
 
 
 class ApplicationController:
     """
-    Main application controller that coordinates all operations.
+    Main application controller that coordinates passphrase generation operations.
     """
     
     def __init__(
@@ -33,17 +31,12 @@ class ApplicationController:
         
         # Initialize models
         self.passphrase_model = PassphraseModel(self.word_repository)
-        self.password_model = PasswordModel()
         
         # Initialize sub-controllers
         self.passphrase_controller = PassphraseController(
             model=self.passphrase_model,
             view=self.view,
             word_repository=self.word_repository
-        )
-        self.password_controller = PasswordController(
-            model=self.password_model,
-            view=self.view
         )
     
     def run_interactive_mode(self) -> None:
@@ -64,8 +57,8 @@ class ApplicationController:
                     break
                 elif command in ['help', 'h', '?']:
                     self.view.display_help()
-                elif command.startswith('generate'):
-                    self._handle_generate_command(command)
+                elif command.startswith('generate') or command.startswith('passphrase'):
+                    self._generate_passphrase_interactive()
                 elif command.startswith('bulk'):
                     self._handle_bulk_command(command)
                 elif command == 'stats':
@@ -80,27 +73,7 @@ class ApplicationController:
             except Exception as e:
                 self.view.display_error(f"Unexpected error: {str(e)}")
     
-    def _handle_generate_command(self, command: str) -> None:
-        """
-        Handle generate commands.
-        
-        Args:
-            command: The full command string
-        """
-        parts = command.split()
-        
-        if len(parts) < 2:
-            self.view.display_error("Please specify what to generate: 'passphrase' or 'password'")
-            return
-        
-        generate_type = parts[1].lower()
-        
-        if generate_type in ['passphrase', 'pass']:
-            self._generate_passphrase_interactive()
-        elif generate_type in ['password', 'pwd']:
-            self._generate_password_interactive()
-        else:
-            self.view.display_error("Unknown generation type. Use 'passphrase' or 'password'")
+
     
     def _handle_bulk_command(self, command: str) -> None:
         """
@@ -117,17 +90,12 @@ class ApplicationController:
         
         try:
             count = int(parts[2])
-            generate_type = parts[3].lower()
-            
-            if generate_type in ['passphrase', 'passphrases']:
-                self.passphrase_controller.display_bulk_passphrases(count)
-            elif generate_type in ['password', 'passwords']:
-                self.password_controller.display_bulk_passwords(count)
-            else:
-                self.view.display_error("Type must be 'passphrase' or 'password'")
+            self.passphrase_controller.display_bulk_passphrases(count)
         
         except ValueError:
             self.view.display_error("Count must be a valid number")
+        except IndexError:
+            self.view.display_error("Usage: bulk generate <count>")
     
     def _generate_passphrase_interactive(self) -> None:
         """Generate passphrase with interactive prompts."""
