@@ -1,42 +1,106 @@
 """
-Word repository - Manages word data for passphrase generation.
+Word repository - Manages word data for passphrase generation using NLTK corpus.
 """
 
-from typing import List, Optional
+from typing import List, Optional, Set
 import secrets
+import string
 
 
 class WordRepository:
     """
     Repository class for managing word collections used in passphrase generation.
+    Uses NLTK corpus as primary source with fallback to built-in words.
     """
     
-    def __init__(self, custom_words: Optional[List[str]] = None):
+    def __init__(self, custom_words: Optional[List[str]] = None, min_length: int = 3, max_length: int = 12):
         """
         Initialize the word repository.
         
         Args:
-            custom_words: Optional custom word list. If None, uses default words.
+            custom_words: Optional custom word list. If None, uses NLTK corpus.
+            min_length: Minimum word length to include
+            max_length: Maximum word length to include
         """
-        self._words = custom_words or self._get_default_words()
+        self.min_length = min_length
+        self.max_length = max_length
+        self._words = custom_words or self._load_nltk_words()
     
-    def _get_default_words(self) -> List[str]:
+    def _load_nltk_words(self) -> List[str]:
         """
-        Get the default word list.
+        Load words from NLTK corpus with fallback to built-in words.
         
         Returns:
-            List[str]: Default collection of words
+            List[str]: Filtered word collection
         """
-        return [
-            "apple", "banana", "cherry", "dragon", "elephant", "forest",
-            "galaxy", "harbor", "island", "jungle", "kitchen", "laptop",
-            "mountain", "nature", "ocean", "planet", "question", "rainbow",
-            "sunset", "thunder", "universe", "valley", "winter", "xenon",
-            "yellow", "zephyr", "bridge", "castle", "diamond", "engine",
-            "falcon", "guitar", "hammer", "iceberg", "jacket", "keychain",
-            "lighthouse", "mirror", "network", "orange", "pencil", "quartz",
-            "rocket", "silver", "tiger", "umbrella", "violet", "wizard"
+        try:
+            import nltk
+            from nltk.corpus import words
+            
+            # Try to use the words corpus
+            try:
+                word_set = set(words.words())
+            except LookupError:
+                # Download the words corpus if not available
+                nltk.download('words', quiet=True)
+                word_set = set(words.words())
+            
+            # Filter words by length and alphabetic characters only
+            filtered_words = [
+                word.lower() for word in word_set
+                if (self.min_length <= len(word) <= self.max_length and 
+                    word.isalpha() and 
+                    word.islower())
+            ]
+            
+            # Remove duplicates and sort
+            filtered_words = sorted(list(set(filtered_words)))
+            
+            if len(filtered_words) < 100:  # Fallback if too few words
+                return self._get_fallback_words()
+            
+            return filtered_words
+            
+        except ImportError:
+            # NLTK not available, use fallback
+            return self._get_fallback_words()
+        except Exception:
+            # Any other error, use fallback
+            return self._get_fallback_words()
+    
+    def _get_fallback_words(self) -> List[str]:
+        """
+        Get fallback word list when NLTK is not available.
+        
+        Returns:
+            List[str]: Fallback collection of common English words
+        """
+        fallback_words = [
+            # Common English words suitable for passphrases
+            "able", "about", "above", "across", "after", "again", "against", "all", "almost", "alone",
+            "along", "already", "also", "although", "always", "among", "another", "any", "anyone", "anything",
+            "anywhere", "are", "area", "around", "back", "based", "became", "because", "become", "been",
+            "before", "began", "being", "below", "between", "both", "bring", "but", "came", "can",
+            "come", "could", "did", "different", "down", "during", "each", "early", "even", "every",
+            "example", "far", "few", "find", "first", "for", "found", "from", "get", "give",
+            "good", "great", "group", "hand", "hard", "has", "have", "hear", "help", "here",
+            "high", "home", "how", "however", "include", "into", "its", "just", "know", "large",
+            "last", "later", "learn", "left", "level", "life", "line", "list", "live", "local",
+            "long", "look", "made", "make", "man", "many", "may", "member", "might", "most",
+            "move", "much", "must", "name", "need", "never", "new", "next", "not", "now",
+            "number", "off", "old", "once", "only", "open", "other", "over", "own", "part",
+            "people", "place", "point", "present", "program", "put", "right", "run", "said", "same",
+            "school", "see", "seem", "several", "should", "show", "small", "some", "something", "still",
+            "such", "system", "take", "than", "that", "the", "their", "them", "then", "there",
+            "these", "they", "thing", "think", "this", "those", "through", "time", "today", "together",
+            "too", "turn", "two", "under", "until", "use", "used", "using", "very", "want",
+            "water", "way", "well", "were", "what", "when", "where", "which", "while", "who",
+            "will", "with", "within", "without", "work", "world", "would", "write", "year", "years"
         ]
+        
+        # Filter by length requirements
+        return [word for word in fallback_words 
+                if self.min_length <= len(word) <= self.max_length]
     
     def get_random_words(self, count: int) -> List[str]:
         """
