@@ -87,46 +87,11 @@ class PassphraseModel:
         if word_count > available_words:
             raise ValueError(f"Cannot generate {word_count} words from {available_words} available words")
     
-    def estimate_entropy(self, word_count: Optional[int] = None) -> float:
+    def get_word_pool_size(self) -> int:
         """
-        Estimate the entropy (bits) of a passphrase with the given word count.
+        Get the size of the available word pool.
         
-        Args:
-            word_count: Number of words (uses default if None)
-            
         Returns:
-            float: Estimated entropy in bits
+            int: Number of words available for generation
         """
-        import math
-        
-        word_count = word_count or self.default_word_count
-        available_words = self.word_repository.get_word_count()
-        
-        # Entropy = log2(possible_combinations)
-        # For passphrases: possible_combinations = available_words ^ word_count
-        entropy = word_count * math.log2(available_words)
-        
-        return entropy
-    
-    def get_strength_rating(self, word_count: Optional[int] = None) -> str:
-        """
-        Get a human-readable strength rating for a passphrase.
-        
-        Args:
-            word_count: Number of words (uses default if None)
-            
-        Returns:
-            str: Strength rating (Weak, Fair, Good, Strong, Very Strong)
-        """
-        entropy = self.estimate_entropy(word_count)
-        
-        if entropy < 30:
-            return "Weak"
-        elif entropy < 50:
-            return "Fair"
-        elif entropy < 70:
-            return "Good"
-        elif entropy < 90:
-            return "Strong"
-        else:
-            return "Very Strong"
+        return self.word_repository.get_word_count()
