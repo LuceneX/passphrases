@@ -100,22 +100,20 @@ class CLIView:
         help_text = """
 Available Commands:
   generate passphrase [options]  - Generate a secure passphrase
-  generate password [options]    - Generate a secure password
-  bulk generate <count> <type>   - Generate multiple items
+  bulk generate <count>          - Generate multiple passphrases
   
 Options:
-  --length N         - Set password length
-  --words N          - Set number of words in passphrase
-  --separator CHAR   - Set word separator for passphrases
+  --words N          - Set number of words in passphrase (default: 4)
+  --separator CHAR   - Set word separator (default: -)
   --no-caps          - Don't capitalize words
   --include-numbers  - Add numbers to passphrase words
-  --no-symbols       - Exclude symbols from passwords
-  --exclude-ambiguous- Exclude ambiguous characters
+  --min-length N     - Minimum word length (default: 3)
+  --max-length N     - Maximum word length (default: 12)
   
 Examples:
   generate passphrase --words 5 --separator _
-  generate password --length 16 --no-symbols
-  bulk generate 10 password
+  generate passphrase --words 3 --no-caps
+  bulk generate 10
         """
         
         self.formatter.print_output(self.formatter.format_title("Help"))
@@ -138,28 +136,7 @@ Examples:
         
         self.formatter.print_output(self.formatter.format_statistics(stats))
     
-    def _analyze_character_types(self, password: str) -> str:
-        """
-        Analyze character types in a password.
-        
-        Args:
-            password: Password to analyze
-            
-        Returns:
-            str: Description of character types used
-        """
-        types = []
-        
-        if any(c.islower() for c in password):
-            types.append("lowercase")
-        if any(c.isupper() for c in password):
-            types.append("uppercase")
-        if any(c.isdigit() for c in password):
-            types.append("digits")
-        if any(not c.isalnum() for c in password):
-            types.append("symbols")
-        
-        return ', '.join(types)
+
     
     def prompt_input(self, message: str) -> str:
         """
