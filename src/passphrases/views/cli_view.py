@@ -32,8 +32,7 @@ class CLIView:
         self,
         passphrase: str,
         word_count: int,
-        entropy: float,
-        strength: str
+        word_pool_size: int
     ) -> None:
         """
         Display a generated passphrase with metadata.
@@ -41,46 +40,20 @@ class CLIView:
         Args:
             passphrase: The generated passphrase
             word_count: Number of words used
-            entropy: Entropy in bits
-            strength: Strength rating
+            word_pool_size: Size of available word pool
         """
-        output = self.formatter.format_generated_item("Passphrase", passphrase, strength)
+        output = self.formatter.format_generated_item("Passphrase", passphrase)
         self.formatter.print_output(output)
         
         stats = {
             'word_count': word_count,
-            'entropy_bits': f"{entropy:.1f}",
-            'character_count': len(passphrase)
+            'character_count': len(passphrase),
+            'word_pool_size': word_pool_size
         }
         
         self.formatter.print_output(self.formatter.format_statistics(stats))
     
-    def display_password(
-        self,
-        password: str,
-        length: int,
-        entropy: float,
-        strength: str
-    ) -> None:
-        """
-        Display a generated password with metadata.
-        
-        Args:
-            password: The generated password
-            length: Password length
-            entropy: Entropy in bits
-            strength: Strength rating
-        """
-        output = self.formatter.format_generated_item("Password", password, strength)
-        self.formatter.print_output(output)
-        
-        stats = {
-            'length': length,
-            'entropy_bits': f"{entropy:.1f}",
-            'character_types': self._analyze_character_types(password)
-        }
-        
-        self.formatter.print_output(self.formatter.format_statistics(stats))
+
     
     def display_bulk_generation(
         self,
