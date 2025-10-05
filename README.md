@@ -53,53 +53,73 @@ passphrases
 # Generate a passphrase
 passphrases passphrase
 
-# Generate a password
-passphrases password
-
 # Generate with custom options
 passphrases passphrase --words 5 --separator _
-passphrases password --length 16 --no-symbols
+passphrases passphrase --words 3 --no-caps --include-numbers
 
-# Generate multiple items
-passphrases passphrase --count 5
-passphrases password --count 10
+# Word length filtering
+passphrases passphrase --min-length 5 --max-length 8
+
+# Generate multiple passphrases
+passphrases passphrase --count 10
 
 # Run demo
 passphrases demo
 ```
 
-### Python API
+### Python API (Library Usage)
 
 ```python
-# Simple usage (backwards compatible)
-from passphrases import hello_world, generate_passphrase, generate_password
+# Simple usage - perfect for integration
+from passphrases import generate_passphrase
 
-print(hello_world())
+# Basic generation
 passphrase = generate_passphrase()
-password = generate_password()
+print(passphrase)  # "Magnificent-Serendipity-Crystalline-Ephemeral"
 
-# Interactive mode
+# Custom parameters  
+passphrase = generate_passphrase(
+    word_count=3, 
+    separator='_', 
+    capitalize=False,
+    include_numbers=True
+)
+print(passphrase)  # "magnificent12_serendipity47_crystalline89"
+
+# Using MVC components directly for advanced control
+from passphrases.models import PassphraseModel, WordRepository
+
+# Custom word filtering
+repo = WordRepository(min_length=6, max_length=10)
+model = PassphraseModel(repo)
+
+passphrase = model.generate(
+    word_count=4, 
+    separator='-', 
+    capitalize=True
+)
+print(passphrase)
+
+# Interactive mode in applications
 from passphrases import run_interactive
 run_interactive()
+```
 
-# Using MVC components directly
-from passphrases import ApplicationController
+### Word Sources
 
-app = ApplicationController()
-app.run_interactive_mode()
+The library uses multiple word sources with automatic fallback:
 
-# Advanced usage with models
-from passphrases.models import PassphraseModel, WordRepository
-from passphrases.views import CLIView
+1. **Primary**: NLTK corpus (`nltk.corpus.words`) - ~175,000 English words
+2. **Secondary**: Built-in curated word list - ~100 common English words
+3. **Custom**: User-provided word lists
 
-# Custom word repository
-custom_words = ['secure', 'random', 'words', 'here']
+```python
+# Using custom words
+from passphrases.models import WordRepository, PassphraseModel
+
+custom_words = ['quantum', 'nexus', 'cipher', 'matrix', 'protocol']
 repo = WordRepository(custom_words)
 model = PassphraseModel(repo)
-view = CLIView()
-
-passphrase = model.generate(word_count=3, separator='-')
-print(passphrase)
 ```
 
 ## Development
@@ -121,6 +141,15 @@ black src/ tests/
 ```bash
 mypy src/
 ```
+
+## Why This Library?
+
+- **No Password Strength Evaluation**: Focuses purely on generation, letting other tools handle strength analysis
+- **NLTK Integration**: Leverages the most comprehensive English word corpus available
+- **Library-First Design**: Built for integration into other applications
+- **Clean Architecture**: MVC pattern makes it easy to extend and maintain
+- **Extensive Word Pool**: 175,000+ words provide excellent entropy and variety
+- **Flexible API**: Simple functions for basic use, full MVC access for advanced needs
 
 ## Contributing
 
