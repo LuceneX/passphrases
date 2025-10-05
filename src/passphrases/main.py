@@ -110,8 +110,9 @@ Examples:
     
     args = parser.parse_args()
     
-    # Create application controller
-    app = ApplicationController()
+    # Create application controller with custom word repository if needed
+    word_repo = WordRepository(min_length=args.min_length, max_length=args.max_length)
+    app = ApplicationController(word_repository=word_repo)
     
     try:
         if args.command is None or args.command == 'interactive':
@@ -138,28 +139,6 @@ Examples:
                     separator=args.separator,
                     capitalize=not args.no_caps,
                     include_numbers=args.include_numbers
-                )
-        
-        elif args.command == 'password':
-            # Generate password(s)
-            if args.count == 1:
-                app.password_controller.generate_and_display_password(
-                    length=args.length,
-                    include_uppercase=not args.no_uppercase,
-                    include_lowercase=not args.no_lowercase,
-                    include_digits=not args.no_digits,
-                    include_symbols=not args.no_symbols,
-                    exclude_ambiguous=args.exclude_ambiguous
-                )
-            else:
-                app.password_controller.display_bulk_passwords(
-                    count=args.count,
-                    length=args.length,
-                    include_uppercase=not args.no_uppercase,
-                    include_lowercase=not args.no_lowercase,
-                    include_digits=not args.no_digits,
-                    include_symbols=not args.no_symbols,
-                    exclude_ambiguous=args.exclude_ambiguous
                 )
     
     except KeyboardInterrupt:
