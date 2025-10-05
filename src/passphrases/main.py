@@ -62,7 +62,7 @@ Examples:
     parser.add_argument(
         'command',
         nargs='?',
-        choices=['passphrase', 'password', 'demo', 'interactive'],
+        choices=['passphrase', 'demo', 'interactive'],
         help='What to generate or run'
     )
     
@@ -88,38 +88,17 @@ Examples:
         action='store_true',
         help='Include numbers in passphrase words'
     )
-    
-    # Password options
     parser.add_argument(
-        '--length',
+        '--min-length',
+        type=int,
+        default=3,
+        help='Minimum word length (default: 3)'
+    )
+    parser.add_argument(
+        '--max-length',
         type=int,
         default=12,
-        help='Password length (default: 12)'
-    )
-    parser.add_argument(
-        '--no-uppercase',
-        action='store_true',
-        help='Exclude uppercase letters'
-    )
-    parser.add_argument(
-        '--no-lowercase',
-        action='store_true',
-        help='Exclude lowercase letters'
-    )
-    parser.add_argument(
-        '--no-digits',
-        action='store_true',
-        help='Exclude digits'
-    )
-    parser.add_argument(
-        '--no-symbols',
-        action='store_true',
-        help='Exclude symbols'
-    )
-    parser.add_argument(
-        '--exclude-ambiguous',
-        action='store_true',
-        help='Exclude ambiguous characters (0, O, l, I, etc.)'
+        help='Maximum word length (default: 12)'
     )
     
     # Bulk generation
