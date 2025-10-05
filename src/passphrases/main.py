@@ -10,6 +10,7 @@ import argparse
 from typing import Optional
 
 from .controllers.application_controller import ApplicationController
+from .models.word_repository import WordRepository
 
 
 # Backwards compatibility functions (using original signatures)
