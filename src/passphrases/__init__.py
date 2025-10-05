@@ -1,10 +1,10 @@
 """
-Passphrases package for generating and managing secure passphrases.
+Passphrases - A Python library for secure passphrase generation using NLTK corpus.
 
 This package follows Model-View-Controller (MVC) architecture:
-- Models: Business logic and data handling
-- Views: User interface and presentation
-- Controllers: Application logic coordination
+- Models: Business logic and data handling (NLTK word repository, passphrase generation)
+- Views: User interface and presentation (CLI, formatting)  
+- Controllers: Application logic coordination (passphrase operations)
 """
 
 __version__ = "0.1.0"
@@ -12,9 +12,7 @@ __version__ = "0.1.0"
 # Import main components for easy access
 from .controllers.application_controller import ApplicationController
 from .controllers.passphrase_controller import PassphraseController
-from .controllers.password_controller import PasswordController
 from .models.passphrase_model import PassphraseModel
-from .models.password_model import PasswordModel
 from .models.word_repository import WordRepository
 from .views.cli_view import CLIView
 
@@ -34,30 +32,23 @@ def hello_world() -> str:
 
 def generate_passphrase(**kwargs) -> str:
     """
-    Generate a passphrase using default settings.
+    Generate a passphrase using NLTK corpus words.
     
     Args:
-        **kwargs: Passphrase generation parameters
+        word_count: Number of words (default: 4)
+        separator: Word separator (default: '-')
+        capitalize: Whether to capitalize words (default: True)
+        include_numbers: Whether to add numbers to words (default: False)
         
     Returns:
         str: Generated passphrase
+        
+    Example:
+        >>> generate_passphrase(word_count=3, separator='_')
+        'Apple_Mountain_Ocean'
     """
     result = _default_app.generate_quick_passphrase(**kwargs)
     return result.get('passphrase', 'Error generating passphrase')
-
-
-def generate_password(**kwargs) -> str:
-    """
-    Generate a password using default settings.
-    
-    Args:
-        **kwargs: Password generation parameters
-        
-    Returns:
-        str: Generated password
-    """
-    result = _default_app.generate_quick_password(**kwargs)
-    return result.get('password', 'Error generating password')
 
 
 def run_interactive() -> None:
@@ -69,7 +60,7 @@ def run_interactive() -> None:
 
 def demo() -> None:
     """
-    Run a demonstration of the application capabilities.
+    Run a demonstration of the passphrase generation capabilities.
     """
     _default_app.demo_generation()
 
@@ -77,15 +68,12 @@ def demo() -> None:
 # Export main components
 __all__ = [
     'hello_world',
-    'generate_passphrase', 
-    'generate_password',
-    'run_interactive',
+    'generate_passphrase',
+    'run_interactive', 
     'demo',
     'ApplicationController',
     'PassphraseController',
-    'PasswordController',
     'PassphraseModel',
-    'PasswordModel',
     'WordRepository',
     'CLIView'
 ]
