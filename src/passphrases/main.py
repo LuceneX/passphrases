@@ -38,35 +38,7 @@ def generate_passphrase(
     return result.get('passphrase', 'Error generating passphrase')
 
 
-def generate_password(
-    length: int = 12,
-    include_uppercase: bool = True,
-    include_lowercase: bool = True,
-    include_digits: bool = True,
-    include_symbols: bool = True
-) -> str:
-    """
-    Generate a secure random password.
-    
-    Args:
-        length: Length of the password
-        include_uppercase: Include uppercase letters
-        include_lowercase: Include lowercase letters
-        include_digits: Include digits
-        include_symbols: Include symbols
-    
-    Returns:
-        str: Generated password
-    """
-    app = ApplicationController()
-    result = app.generate_quick_password(
-        length=length,
-        include_uppercase=include_uppercase,
-        include_lowercase=include_lowercase,
-        include_digits=include_digits,
-        include_symbols=include_symbols
-    )
-    return result.get('password', 'Error generating password')
+
 
 
 def main() -> None:
