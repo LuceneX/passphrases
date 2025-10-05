@@ -117,7 +117,8 @@ class TestApplicationController:
         """Test controller initialization."""
         app = ApplicationController()
         assert app.passphrase_controller is not None
-        assert app.password_controller is not None
+        assert app.word_repository is not None
+        assert app.passphrase_model is not None
     
     def test_quick_passphrase_generation(self):
         """Test quick passphrase generation method."""
