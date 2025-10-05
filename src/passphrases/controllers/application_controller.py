@@ -162,26 +162,23 @@ class ApplicationController:
     
     def demo_generation(self) -> None:
         """
-        Run a demonstration of the generation capabilities.
+        Run a demonstration of the passphrase generation capabilities.
         """
-        self.view.display_info("Demonstration Mode")
+        self.view.display_info("Passphrase Generation Demo")
         
-        # Generate sample passphrase
-        passphrase_result = self.generate_quick_passphrase()
-        if 'error' not in passphrase_result:
-            self.view.display_passphrase(
-                passphrase=passphrase_result['passphrase'],
-                word_count=passphrase_result['word_count'],
-                entropy=passphrase_result['entropy'],
-                strength=passphrase_result['strength']
-            )
+        # Generate sample passphrases with different configurations
+        configs = [
+            {'word_count': 4, 'separator': '-', 'capitalize': True},
+            {'word_count': 3, 'separator': '_', 'capitalize': False},
+            {'word_count': 5, 'separator': ' ', 'capitalize': True, 'include_numbers': True}
+        ]
         
-        # Generate sample password
-        password_result = self.generate_quick_password()
-        if 'error' not in password_result:
-            self.view.display_password(
-                password=password_result['password'],
-                length=password_result['length'],
-                entropy=password_result['entropy'],
-                strength=password_result['strength']
-            )
+        for i, config in enumerate(configs, 1):
+            self.view.display_info(f"Example {i}:")
+            passphrase_result = self.generate_quick_passphrase(**config)
+            if 'error' not in passphrase_result:
+                self.view.display_passphrase(
+                    passphrase=passphrase_result['passphrase'],
+                    word_count=passphrase_result['word_count'],
+                    word_pool_size=passphrase_result['word_pool_size']
+                )
