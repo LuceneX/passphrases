@@ -61,14 +61,11 @@ class PassphraseController:
             
             # Calculate metadata
             actual_word_count = word_count or self.model.default_word_count
-            entropy = self.model.estimate_entropy(actual_word_count)
-            strength = self.model.get_strength_rating(actual_word_count)
             
             return {
                 'passphrase': passphrase,
                 'word_count': actual_word_count,
-                'entropy': entropy,
-                'strength': strength,
+                'word_pool_size': self.model.get_word_pool_size(),
                 'separator': separator or self.model.default_separator,
                 'capitalized': capitalize,
                 'includes_numbers': include_numbers
