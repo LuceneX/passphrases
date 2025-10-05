@@ -109,8 +109,7 @@ class PassphraseController:
         self.view.display_passphrase(
             passphrase=result['passphrase'],
             word_count=result['word_count'],
-            entropy=result['entropy'],
-            strength=result['strength']
+            word_pool_size=result['word_pool_size']
         )
         
         return True

@@ -55,23 +55,18 @@ class CLIView:
     
 
     
-    def display_bulk_generation(
-        self,
-        items: list,
-        item_type: str
-    ) -> None:
+    def display_bulk_passphrases(self, passphrases: list) -> None:
         """
-        Display multiple generated items.
+        Display multiple generated passphrases.
         
         Args:
-            items: List of generated items (passphrases or passwords)
-            item_type: Type of items being displayed
+            passphrases: List of generated passphrases
         """
-        title = f"Generated {item_type}s"
+        title = "Generated Passphrases"
         self.formatter.print_output(self.formatter.format_title(title))
         
-        for i, item in enumerate(items, 1):
-            self.formatter.print_output(f"{i:2d}. {self.formatter.colorize(item, 'green')}")
+        for i, passphrase in enumerate(passphrases, 1):
+            self.formatter.print_output(f"{i:2d}. {self.formatter.colorize(passphrase, 'green')}")
     
     def display_error(self, error_message: str) -> None:
         """
