@@ -1,13 +1,11 @@
 """
-Tests for the passphrases package (MVC Architecture).
+Tests for the passphrases package (NLTK-based passphrase generation library).
 """
 
 import pytest
-from passphrases import hello_world, generate_passphrase, generate_password
+from passphrases import hello_world, generate_passphrase
 from passphrases.main import generate_passphrase as main_generate_passphrase
-from passphrases.main import generate_password as main_generate_password
 from passphrases.models.passphrase_model import PassphraseModel
-from passphrases.models.password_model import PasswordModel
 from passphrases.models.word_repository import WordRepository
 from passphrases.controllers.application_controller import ApplicationController
 
